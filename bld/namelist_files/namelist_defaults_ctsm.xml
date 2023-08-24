@@ -1113,6 +1113,18 @@ lnd/clm2/surfdata_map/release-clm5.0.30/surfdata_ne0np4.ARCTIC.ne30x4_hist_78pft
 <fsurdat hgrid="ne0np4CONUS.ne30x8"       sim_year="2000">
 lnd/clm2/surfdata_map/release-clm5.0.30/surfdata_ne0np4.CONUS.ne30x8_hist_78pfts_CMIP6_simyr2000_c200426.nc</fsurdat>
 
+<!-- MPAS atmosphere dycore/grids (experimental) -->
+<fsurdat hgrid="mpasa480" sim_year="2000">
+lnd/clm2/surfdata_map/surfdata_mpasa480_hist_78pfts_CMIP6_simyr2000_c211110.nc</fsurdat>
+<fsurdat hgrid="mpasa120" sim_year="2000">
+lnd/clm2/surfdata_map/surfdata_mpasa120_hist_78pfts_CMIP6_simyr2000_c211108.nc</fsurdat>
+<fsurdat hgrid="mpasa60"  sim_year="2000">
+lnd/clm2/surfdata_map/surfdata_mpasa60_hist_78pfts_CMIP6_simyr2000_c211110.nc</fsurdat>
+<fsurdat hgrid="mpasa30"  sim_year="2000">
+lnd/clm2/surfdata_map/surfdata_mpasa30_hist_78pfts_CMIP6_simyr2000_c211111.nc</fsurdat>
+<fsurdat hgrid="mpasa15"  sim_year="2000">
+lnd/clm2/surfdata_map/surfdata_mpasa15_hist_78pfts_CMIP6_simyr2000_c211111.nc</fsurdat>
+
 <!-- 100% Urban single-point datasets (only for sim-year=2000) -->
 <fsurdat hgrid="1x1_vancouverCAN"    sim_year="2000" >
 lnd/clm2/surfdata_map/ctsm5.1.dev116/surfdata_1x1_vancouverCAN_hist_78pfts_CMIP6_simyr2000_c230123.nc</fsurdat>
