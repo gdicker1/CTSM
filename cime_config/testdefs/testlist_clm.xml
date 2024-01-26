@@ -53,6 +53,69 @@
       <option name="wallclock">00:20:00</option>
     </options>
   </test>
+  <test name="ERP_D_Ld9" grid="ne30pg3_t232" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development Exact restart test with change in the processor count at the standard coupled resolution</option>
+    </options>
+  </test>
+  <test name="ERP_D_Ld9" grid="ne30pg3_t232" compset="IHistClm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development Exact restart test with change in the processor count at the standard coupled resolution for transient</option>
+    </options>
+  </test>
+  <test name="PEM_D_Ld9" grid="ne30pg3_t232" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development test with change in the processor count at the standard coupled resolution</option>
+    </options>
+  </test>
+  <test name="ERS_D_Ld9" grid="ne30pg3_t232" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development simple exact restart test with change in the processor count at the standard coupled resolution</option>
+    </options>
+  </test>
+  <test name="ERI_D" grid="ne30pg3_t232" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development Exact restart test for all startup types at the standard coupled resolution</option>
+    </options>
+  </test>
+  <test name="SMS_Lm1" grid="ne30pg3_t232" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development test at the standard coupled resolution for a month</option>
+    </options>
+  </test>
+  <test name="SMS" grid="ne30pg3_t232" compset="I2000Clm51BgcCrop" testmods="clm/clm51cam6LndTuningMode">
+    <machines>
+      <machine name="derecho" compiler="intel" category="cesm3_dev"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment">CESM3 development test at the standard coupled resolution for 2000</option>
+    </options>
+  </test>
   <test name="SMS_Ln9" grid="C96_t061" compset="I2000Clm50SpRs" testmods="clm/clm50cam6LndTuningMode">
     <machines>
       <machine name="cheyenne" compiler="intel" category="ctsm_sci"/>
@@ -79,7 +142,7 @@
       <option name="wallclock">00:60:00</option>
     </options>
   </test>
-  <test name="ERI_D_Ld9" grid="T31_g37" compset="I2000Clm50Sp" testmods="clm/SNICARFRC">
+  <test name="ERI_D_Ld9" grid="f10_f10_mg37" compset="I2000Clm50Sp" testmods="clm/SNICARFRC">
     <machines>
       <machine name="cheyenne" compiler="intel" category="aux_clm"/>
     </machines>
@@ -151,7 +214,7 @@
       <option name="wallclock">00:40:00</option>
     </options>
   </test>
-  <test name="ERI_D_Ld9_P48x1" grid="T31_g37" compset="I2000Clm50Sp" testmods="clm/reduceOutput">
+  <test name="ERI_D_Ld9_P48x1" grid="f10_f10_mg37" compset="I2000Clm50Sp" testmods="clm/reduceOutput">
     <machines>
       <machine name="izumi" compiler="nag" category="aux_clm"/>
     </machines>
@@ -477,6 +540,15 @@
     <options>
       <option name="wallclock">00:40:00</option>
       <option name="comment"  >Transient case with isotopes with a December start</option>
+    </options>
+  </test>
+  <test name="ERP_D_Ld10_P36x2" grid="f10_f10_mg37" compset="IHistClm51BgcCrop" testmods="clm/ciso_decStartNoMeier">
+    <machines>
+      <machine name="cheyenne" compiler="intel" category="aux_clm"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:40:00</option>
+      <option name="comment"  >Transient case with isotopes with a December start, without Meier roughness</option>
     </options>
   </test>
   <test name="SMS_Ld3_PS" grid="f09_g17" compset="IHistClm50BgcCrop" testmods="clm/f09_dec1990Start_GU_LULCC">
@@ -1007,7 +1079,7 @@
     </machines>
     <options>
       <option name="wallclock">00:20:00</option>
-      <option name="comment"  >Among other extra outputs, ensure that writing the history field master list to a separate file does not cause failure"</option>
+      <option name="comment"  >Among other extra outputs, ensure that writing the list of all history fields to a separate file does not cause failure"</option>
     </options>
   </test>
   <test name="ERS_D_Ld3" grid="f10_f10_mg37" compset="I1850Clm50BgcCrop" testmods="clm/default">
@@ -1223,7 +1295,17 @@
       <option name="comment"  >Basic LII test, covering the standard range of subgrid heterogeneity - particularly, including crop. Uses a year-2000 restart file so that the restart file has non-zero product pools, so that we exercise the gridcell-level code in init_interp.</option>
     </options>
   </test>
-  <test name="LII2FINIDATAREAS_D_P72x2_Ld1" grid="f09_g17" compset="I1850Clm50BgcCrop" testmods="clm/default">
+  <test name="LII_D_Ld3_PS" grid="ne30pg3_g17" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningModeCiso">
+    <machines>
+      <machine name="cheyenne" compiler="intel" category="aux_clm"/>
+    </machines>
+    <options>
+      <option name="wallclock">00:20:00</option>
+      <option name="comment"  >Basic LII test, using the only finidat file that doesn't require use_init_interp=T</option>
+      <option name="comment"  >Note, that a LII2FINIDATAREAS like this one fails</option>
+    </options>
+  </test>
+  <test name="LII2FINIDATAREAS_D_P72x2_Ld1" grid="ne30pg3_g17" compset="I1850Clm51BgcCrop" testmods="clm/clm51cam6LndTuningModeCiso">
     <machines>
       <machine name="cheyenne" compiler="intel" category="aux_clm"/>
     </machines>
@@ -2324,17 +2406,16 @@
       <option name="comment"  >Run a test with MEGAN on and FATES-SP</option>
     </options>
   </test>
-<!--    Don't active this test until #1722 is fixed
-  <test name="SMS_Ld3" grid="f09_f09_mg17" compset="I2000Clm51FatesCruRsGs" testmods="clm/FatesColdSatPhen_prescribed">
+
+  <test name="SMS_Ld3" grid="f09_g17" compset="I2000Clm51FatesSpCruRsGs" testmods="clm/FatesColdSatPhen_prescribed">
     <machines>
       <machine name="cheyenne" compiler="intel" category="fates"/>
     </machines>
     <options>
       <option name="wallclock">00:20:00</option>
-      <option name="comment">Test with prescribed LAI and soil-moisture with FatesSP mode, has to be at f09 and 2000</option>
+      <option name="comment">Test with prescribed LAI and soil moisture with FatesSP mode</option>
     </options>
   </test>
--->
   <test name="SMS_Lm1" grid="f45_f45_mg37" compset="I2000Clm51FatesSpCruRsGs" testmods="clm/FatesColdBasic">
     <machines>
       <machine name="cheyenne" compiler="intel" category="fates"/>
@@ -2481,6 +2562,23 @@
     </machines>
   </test>
 
+  <test name="MKSURFDATAESMF_P144x1" grid="f10_f10_mg37" compset="I1850Clm50BgcCrop">
+    <machines>
+      <machine name="cheyenne" compiler="intel" category="aux_clm">
+        <options>
+          <option name="wallclock">00:40:00</option>
+          <option name="comment">Smoke test that first runs the mksurfdata_esmf tool and then ensures that the CTSM does not fail using the just-generated fsurdat file. Global BGC CROP case.</option>
+        </options>
+      </machine>
+      <machine name="cheyenne" compiler="intel" category="clm_pymods">
+        <options>
+          <option name="wallclock">00:40:00</option>
+          <option name="comment">This test invokes python code, so it should be run whenever changing python code (in addition to being run as part of aux_clm).</option>
+        </options>
+      </machine>
+    </machines>
+  </test>
+
   <test name="FSURDATMODIFYCTSM_D_Mmpi-serial_Ld1" grid="5x5_amazon" compset="I2000Clm50SpRs">
     <machines>
       <machine name="cheyenne" compiler="intel" category="aux_clm">
@@ -2591,7 +2689,7 @@
     </machines>
   </test>
 
-  <test name="RXCROPMATURITY_Lm61" grid="f09_g17" compset="IHistClm50BgcCrop">
+  <test name="RXCROPMATURITY_Lm61" grid="f09_g17" compset="IHistClm50BgcCrop"  testmods="clm/cropMonthOutput">
     <machines>
       <machine name="cheyenne" compiler="intel" category="ctsm_sci">
         <options>
