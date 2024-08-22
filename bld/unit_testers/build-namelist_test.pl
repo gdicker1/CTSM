@@ -42,7 +42,7 @@ sub make_env_run {
     my %settings = @_;
 
     # Set default settings
-    my %env_vars = ( DIN_LOC_ROOT=>"MYDINLOCROOT", GLC_TWO_WAY_COUPLING=>"FALSE" );
+    my %env_vars = ( DIN_LOC_ROOT=>"MYDINLOCROOT", GLC_TWO_WAY_COUPLING=>"FALSE", NEONSITE=>"" );
     # Set any settings that came in from function call
     foreach my $item ( keys(%settings) ) {
        $env_vars{$item} = $settings{$item};
@@ -139,7 +139,7 @@ if (defined($opts{'csmdata'})) {
     $inputdata_rootdir = $ENV{'CSMDATA'};
 } else {
    # use yellowstone location as default
-   $inputdata_rootdir="/glade/p/cesm/cseg/inputdata";
+   $inputdata_rootdir="/glade/campaign/cesm/cesmdata/cseg/inputdata";
    print("WARNING:  -csmdata nor CSMDATA are set, using default yellowstone location: $inputdata_rootdir\n");
 }
 
@@ -163,10 +163,10 @@ my $testType="namelistTest";
 #
 # Figure out number of tests that will run
 #
-my $ntests = 1999;
+my $ntests = 1611;
 
 if ( defined($opts{'compare'}) ) {
-   $ntests += 1353;
+   $ntests += 945;
 }
 plan( tests=>$ntests );
 
@@ -190,8 +190,7 @@ my $mode = "-phys $phys";
 &make_config_cache($phys);
 
 my $DOMFILE = "$inputdata_rootdir/atm/datm7/domain.lnd.T31_gx3v7.090928.nc";
-my $real_par_file = "user_nl_ctsm_real_parameters";
-my $bldnml = "../build-namelist -verbose -csmdata $inputdata_rootdir -configuration clm -structure standard -glc_nec 10 -no-note -output_reals $real_par_file";
+my $bldnml = "../build-namelist -verbose -csmdata $inputdata_rootdir -configuration clm -structure standard -glc_nec 10 -no-note";
 if ( $opts{'test'} ) {
    $bldnml .= " -test";
 }
@@ -201,7 +200,7 @@ if ( -f $tempfile ) {
   system( "/bin/rm $tempfile" );
 }
 
-my @files = ( "lnd_in", $tempfile, $real_par_file );
+my @files = ( "lnd_in", $tempfile );
 my $cwd = `pwd`;
 chomp( $cwd );
 my $cfiles = NMLTest::CompFiles->new( $cwd, @files );
@@ -269,13 +268,11 @@ my $options = "-co2_ppmv 250 ";
       $cfiles->copyfiles( "most_options", $mode );
    # Compare to default
       $cfiles->doNOTdodiffonfile( "lnd_in",    "default", $mode );
-      $cfiles->doNOTdodiffonfile( "$real_par_file", "default", $mode );
       $cfiles->doNOTdodiffonfile( "$tempfile", "default", $mode );
       $cfiles->comparefiles( "default", $mode );
    # Compare to baseline
    if ( defined($opts{'compare'}) ) {
       $cfiles->dodiffonfile(      "lnd_in",    "most_options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "most_options", $mode );
       $cfiles->doNOTdodiffonfile( "$tempfile", "most_options", $mode );
       $cfiles->comparefiles( "most_options", $mode, $opts{'compare'} );
    }
@@ -358,7 +355,6 @@ foreach my $driver ( "mct", "nuopc" ) {
       }
       if ( defined($opts{'compare'}) ) {
          $cfiles->doNOTdodiffonfile( "$tempfile", "$base_options $options", $mode );
-         $cfiles->dodiffonfile( "$real_par_file", "$base_options $options", $mode );
          $cfiles->comparefiles( "$base_options $options", $mode, $opts{'compare'} );
       }
       if ( defined($opts{'generate'}) ) {
@@ -381,7 +377,7 @@ foreach my $site ( "ABBY", "BLAN", "CPER", "DEJU", "GRSM", "HEAL", "KONA", "LENO
                    "JORN", "LAJA", "MOAB", "OAES", "OSBS", "SCBI", "SOAP", "STER", "TOOL",
                    "UNDE", "YELL"
  ) {
-   &make_env_run();
+   &make_env_run( NEONSITE=>"$site" );
    #
    # Concatonate  default usermods and specific sitetogether expanding env variables while doing that
    #
@@ -400,7 +396,7 @@ foreach my $site ( "ABBY", "BLAN", "CPER", "DEJU", "GRSM", "HEAL", "KONA", "LENO
    #
    # Now run  the site
    #
-   my $options = "-res CLM_USRDAT -clm_usr_name NEON -no-megan -bgc bgc -sim_year 2018 -infile $namelistfile";
+   my $options = "--res CLM_USRDAT --clm_usr_name NEON --no-megan --bgc bgc --use_case 2018_control --infile $namelistfile";
    eval{ system( "$bldnml -envxml_dir . $options > $tempfile 2>&1 " ); };
    is( $@, '', "options: $options" );
    $cfiles->checkfilesexist( "$options", $mode );
@@ -408,7 +404,6 @@ foreach my $site ( "ABBY", "BLAN", "CPER", "DEJU", "GRSM", "HEAL", "KONA", "LENO
    if ( defined($opts{'compare'}) ) {
       $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
       $cfiles->dodiffonfile(      "lnd_in",    "$options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
       $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
    }
    if ( defined($opts{'generate'}) ) {
@@ -445,7 +440,6 @@ foreach my $phys ( "clm4_5", "clm5_0" ) {
       if ( defined($opts{'compare'}) ) {
          $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
          $cfiles->dodiffonfile(      "lnd_in",    "$options", $mode );
-         $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
          $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
       }
       if ( defined($opts{'generate'}) ) {
@@ -470,6 +464,7 @@ foreach my $options (
                       "-bgc fates  -use_case 1850_control -no-megan -namelist \"&a use_fates_sp=T, soil_decomp_method='None'/\"",
                       "-bgc sp  -use_case 2000_control -res 0.9x1.25 -namelist '&a use_soil_moisture_streams = T/'",
                       "-bgc bgc -use_case 1850-2100_SSP5-8.5_transient -namelist '&a start_ymd=19101023/'",
+                      "-namelist \"&a dust_emis_method='Zender_2003', zender_soil_erod_source='lnd' /'\"",
                       "-bgc bgc -use_case 2000_control -namelist \"&a fire_method='nofire'/\" -crop",
                       "-res 0.9x1.25 -bgc sp -use_case 1850_noanthro_control -drydep -fire_emis",
                       "-res 0.9x1.25 -bgc bgc -use_case 1850_noanthro_control -drydep -fire_emis -light_res 360x720",
@@ -486,7 +481,6 @@ foreach my $options (
    if ( defined($opts{'compare'}) ) {
       $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
       $cfiles->dodiffonfile(      "lnd_in",    "$options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
       $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
    }
    if ( defined($opts{'generate'}) ) {
@@ -811,21 +805,6 @@ my %failtest = (
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
                                      phys=>"clm4_5",
                                    },
-     "-vic with origflag=1"      =>{ options=>"-vichydro -envxml_dir .",
-                                     namelst=>"origflag=1",
-                                     GLC_TWO_WAY_COUPLING=>"FALSE",
-                                     phys=>"clm4_5",
-                                   },
-     "l_bnd=flux with origflag=0"=>{ options=>"-envxml_dir .",
-                                     namelst=>"origflag=0, lower_boundary_condition=1",
-                                     GLC_TWO_WAY_COUPLING=>"FALSE",
-                                     phys=>"clm4_5",
-                                   },
-     "l_bnd=zflux with origflag=0"=>{ options=>"-envxml_dir .",
-                                     namelst=>"origflag=0, lower_boundary_condition=2",
-                                     GLC_TWO_WAY_COUPLING=>"FALSE",
-                                     phys=>"clm4_5",
-                                   },
      "bedrock with l_bnc=flux"   =>{ options=>"-envxml_dir .",
                                      namelst=>"use_bedrock=.true., lower_boundary_condition=1",
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
@@ -1061,6 +1040,16 @@ my %failtest = (
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
                                      phys=>"clm4_5",
                                    },
+     "useinventorybutnotfile"    =>{ options=>"--res 0.9x1.25 --bgc fates --envxml_dir . --no-megan",
+                                     namelst=>"use_fates_luh=.true.",
+                                     GLC_TWO_WAY_COUPLING=>"FALSE",
+                                     phys=>"clm4_5",
+                                   },
+     "inventoryfileDNE"          =>{ options=>"-bgc fates -envxml_dir . -no-megan",
+                                     namelst=>"use_fates_luh=.true., fluh_timeseries='zztop'",
+                                     GLC_TWO_WAY_COUPLING=>"FALSE",
+                                     phys=>"clm4_5",
+                                   },
      "useMEGANwithFATES"         =>{ options=>"-bgc fates -envxml_dir . -megan",
                                      namelst=>"",
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
@@ -1212,7 +1201,7 @@ my %failtest = (
                                      phys=>"clm5_0",
                                    },
      "NOlunabutsetJmaxb1"        =>{ options=>"-envxml_dir . -bgc sp",
-                                     namelst=>"use_luna=.false., jmaxb1=1.0",
+                                     namelst=>"use_luna=.fwlse., jmaxb1=1.0",
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
                                      phys=>"clm5_0",
                                    },
@@ -1246,6 +1235,18 @@ my %failtest = (
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
                                      phys=>"clm5_0",
                                      },
+     "soil_erod_wo_Zender"      =>{ options=>"--envxml_dir . --ignore_warnings",
+                                     namelst=>"dust_emis_method='Leung_2023', " .
+                                     "stream_meshfile_zendersoilerod = '/dev/null'",
+                                     GLC_TWO_WAY_COUPLING=>"FALSE",
+                                     phys=>"clm5_1",
+                                     },
+     "soil_erod_wo_lnd_source"  =>{ options=>"--envxml_dir .",
+                                     namelst=>"dust_emis_method='Zender_2003', " .
+                                     "stream_fldfilename_zendersoilerod = '/dev/null', zender_soil_erod_source='atm'",
+                                     GLC_TWO_WAY_COUPLING=>"FALSE",
+                                     phys=>"clm5_1",
+                                     },
                );
 foreach my $key ( keys(%failtest) ) {
    print( "$key\n" );
@@ -1267,6 +1268,11 @@ print "=========================================================================
 
 my %warntest = (
      # Warnings without the -ignore_warnings option given
+     "dustemisLeung"             =>{ options=>"-envxml_dir .",
+                                     namelst=>"dust_emis_method = 'Leung_2023'",
+                                     GLC_TWO_WAY_COUPLING=>"FALSE",
+                                     phys=>"clm5_1",
+                                   },
      "coldwfinidat"              =>{ options=>"-envxml_dir . -clm_start_type cold",
                                      namelst=>"finidat = 'testfile.nc'",
                                      GLC_TWO_WAY_COUPLING=>"FALSE",
@@ -1393,7 +1399,6 @@ foreach my $res ( @resolutions ) {
    $cfiles->shownmldiff( "default", "standard" );
    if ( defined($opts{'compare'}) ) {
       $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
       $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
    }
 
@@ -1478,7 +1483,6 @@ foreach my $res ( @crop_res ) {
    $cfiles->shownmldiff( "default", "standard" );
    if ( defined($opts{'compare'}) ) {
       $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
       $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
    }
    if ( defined($opts{'generate'}) ) {
@@ -1552,7 +1556,6 @@ foreach my $res ( @tran_res ) {
    $cfiles->shownmldiff( "default", "standard" );
    if ( defined($opts{'compare'}) ) {
       $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
-      $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
       $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
    }
    if ( defined($opts{'generate'}) ) {
@@ -1579,7 +1582,6 @@ foreach my $usecase ( "1850_control", "1850-2100_SSP5-8.5_transient", "1850-2100
       $cfiles->shownmldiff( "default", "standard" );
       if ( defined($opts{'compare'}) ) {
          $cfiles->doNOTdodiffonfile( "$tempfile", "$options", $mode );
-         $cfiles->dodiffonfile( "$real_par_file", "$options", $mode );
          $cfiles->comparefiles( "$options", $mode, $opts{'compare'} );
       }
       if ( defined($opts{'generate'}) ) {
@@ -1716,9 +1718,9 @@ foreach my $phys ( "clm4_5", 'clm5_0', 'clm5_1' ) {
   &make_config_cache($phys);
   my @forclist = ();
   if ( $phys == "clm5_1" ) {
-    @forclist = ( "GSWP3v1" );
+    @forclist = ( "GSWP3v1", "cam6.0", "cam5.0", "cam4.0" );
   } else {
-    @forclist = ( "CRUv7", "GSWP3v1", "cam6.0" );
+    @forclist = ( "CRUv7", "GSWP3v1", "cam6.0", "cam5.0", "cam4.0" );
   }
   foreach my $forc ( @forclist ) {
      foreach my $bgc ( "sp", "bgc" ) {
@@ -1762,7 +1764,6 @@ sub cleanup {
   my $type = shift;
 
   print "Cleanup files created\n";
-  system( "/bin/rm env_run.xml $real_par_file" );
   if ( defined($type) ) {
      if ( $type eq "config" ) {
         system( "/bin/rm config_cache.xml" );

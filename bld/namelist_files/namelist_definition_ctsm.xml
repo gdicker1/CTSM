@@ -686,6 +686,17 @@ Switch deciding which nutrient model to use in FATES.
 (Only relevant if FATES is on)
 </entry>
 
+<entry id="fates_seeddisp_cadence" type="integer" category="physics"
+        group="clm_inparm" valid_values="0,1,2,3">
+Switch defining the cadence at which seeds are dispersed across
+gridcells.  Setting the switch value to zero turns off dispersal.
+Setting the switch to 1, 2, or 3 sets the dispersal cadence to
+daily, monthly or yearly.  The daily cadence is primarily
+recommended for test and debug only. Note that turning this
+feature on will result in more memory usage.
+(Only relevant if FATES is on)
+</entry>
+
 <entry id="use_fates_tree_damage" type="logical" category="physics"
         group="clm_inparm" valid_values="" value=".false."> 
 Toggle to turn on the tree damage module in FATES
@@ -766,11 +777,75 @@ Full pathname to the inventory initialization control file.
 (Only relevant if FATES is on).
 </entry>
 
+<entry id="fates_history_dimlevel" type="integer(2)" category="physics"
+       group="clm_inparm" valid_values="0,1,2" >
+  Setting for what types of FATES history to be allocate and
+  calculated at the dynamics timestep (1st integer) and the
+  model timestep (2nd integer). This must be consistent with
+  hist_fincl*, ie output variables must not be listed if the
+  output level is not enabled.
+  0 = no fates history variables are calculated or allocated
+  1 = only time x space (3d) fates history variables allowed
+  2 = multiplexed dimensioned fates history is also allowed
+  (Only relevant if FATES is on)
+</entry>
+
+<!-- This may eventually migrate to the dynamic_subgrid group-->
+<entry id="use_fates_luh" type="logical" category="physics"
+       group="clm_inparm" valid_values="" >
+If TRUE, enable use of land use harmonization (LUH) state and transition data from luh_timeseries file.
+(Also, only valid for use_fates = true and is incompatible with transient runs currently.)
+</entry>
+
+<!-- This could eventually be included in the "dynamic_subgrid" -->
+<entry id="fluh_timeseries" type="char*256" category="datasets"
+       input_pathname="abs" group="clm_inparm" valid_values="" >
+Full pathname of unified land use harmonization (LUH) data file. This causes the land-use
+types to vary over time.
+(Required, if use_fates_luh=T)
+(Only relevant if FATES is on).
+</entry>
+
 <entry id="use_luna" type="logical" category="physics"
         group="clm_inparm" valid_values="" value=".false.">
 Toggle to turn on the LUNA model, to effect Photosynthesis by leaf Nitrogen
 LUNA operates on C3 and non-crop vegetation (see vcmax_opt for how other veg is handled)
 LUNA: Leaf Utilization of Nitrogen for Assimilation
+</entry>
+
+<entry id="use_hillslope" type="logical" category="physics"
+        group="clm_inparm" valid_values="" value=".false.">
+Toggle to turn on the hillslope model
+</entry>
+
+<entry id="downscale_hillslope_meteorology" type="logical" category="physics"
+        group="clm_inparm" valid_values="" value=".false.">
+Toggle to turn on meteorological downscaling in hillslope model
+</entry>
+
+<entry id="use_hillslope_routing" type="logical" category="physics"
+        group="clm_inparm" valid_values="" value=".false.">
+Toggle to turn on surface water routing in the hillslope hydrology model
+</entry>
+
+<entry id="hillslope_head_gradient_method" type="char*256" category="physics"
+        group="hillslope_hydrology_inparm" valid_values="Kinematic,Darcy">
+Method for calculating hillslope saturated head gradient
+</entry>
+
+<entry id="hillslope_transmissivity_method" type="char*256" category="physics"
+        group="hillslope_hydrology_inparm" valid_values="LayerSum,Uniform">
+Method for calculating transmissivity of hillslope columns
+</entry>
+
+<entry id="hillslope_pft_distribution_method" type="char*256" category="physics"
+        group="hillslope_properties_inparm" valid_values="Standard,FromFile,DominantPftUniform,DominantPftLowland,PftLowlandUpland">
+Method for distributing pfts across hillslope columns
+</entry>
+
+<entry id="hillslope_soil_profile_method" type="char*256" category="physics"
+        group="hillslope_properties_inparm" valid_values="Uniform,FromFile,SetLowlandUpland,Linear">
+Method for distributing soil thickness across hillslope columns
 </entry>
 
 <entry id="use_hydrstress" type="logical" category="physics"
@@ -1135,6 +1210,13 @@ Toggle to turn on the prognostic fertilizer for crop model
 <entry id="use_grainproduct" type="logical" category="physics"
        group="clm_inparm" valid_values="" value=".false.">
 Toggle to turn on the 1-year grain product pool in the crop model 
+</entry>
+
+<entry id="crop_residue_removal_frac" type="real" category="physics"
+       group="clm_inparm" valid_values="" value="0.0d00">
+Fraction of post-harvest crop residues (leaf and stem) to move to 
+1-year product pool instead of letting them fall as litter.
+<default>Default: 0.0</default>
 </entry>
 
 <entry id="baset_mapping" type="char*20" category="physics"
@@ -1751,6 +1833,49 @@ Mapping method from Nitrogen deposition input file to the model resolution
 </entry>
 
 <!-- ========================================================================================  -->
+<!-- Dust namelist and Zender soil erodibility stream                                          -->
+<!-- ========================================================================================  -->
+
+<entry id="dust_emis_method" type="char*12" category="physics"
+       group="clm_inparm" valid_values="Zender_2003,Leung_2023" >
+Which dust emission method is going to be used. Either the Zender 2003 scheme or the Leung 2023
+scheme.
+(NOTE: The Leung 2023 method is NOT currently available)
+</entry>
+
+<entry id="zender_soil_erod_source" type="char*3" category="physics"
+       group="zendersoilerod" valid_values="lnd,atm" >
+Option only applying for the Zender_2003 method for whether the soil erodibility file is handled
+here in CTSM, or in the ATM model.
+(only used when dust_emis_method is Zender_2003)
+</entry>
+
+<entry id="zendersoilerod_mapalgo" type="char*256" category="physics"
+       group="zendersoilerod" valid_values="bilinear,nn,nnoni,nnonj,spval,copy" >
+Option only applying for the Zender_2003 method for whether the soil erodibility file is handled
+here in CTSM, or in the ATM model.
+(only used when dust_emis_method is Zender_2003)
+    bilinear = bilinear interpolation
+    nn       = nearest neighbor
+    nnoni    = nearest neighbor on the "i" (longitude) axis
+    nnonj    = nearest neighbor on the "j" (latitude) axis
+    spval    = set to special value
+    copy     = copy using the same indices
+</entry>
+
+<entry id="stream_fldfilename_zendersoilerod" type="char*256" category="datasets"
+       input_pathname="abs" group="zendersoilerod" valid_values="" >
+Filename of input stream data for Zender's soil erodibility source function
+(only used when dust_emis_method is Zender_2003, and zender_soil_erod_source is lnd)
+</entry>
+
+<entry id="stream_meshfile_zendersoilerod" type="char*256" category="datasets"
+       input_pathname="abs" group="zendersoilerod" valid_values="" >
+mesh filename of input stream data for Zender's soil erodibility source function
+(only used when dust_emis_method is Zender_2003, and zender_soil_erod_source is lnd)
+</entry>
+
+<!-- ========================================================================================  -->
 <!-- finundated stream -->
 <!-- ========================================================================================  -->
 
@@ -1882,9 +2007,19 @@ Last year to loop over for crop calendar data
 Simulation year that aligns with stream_year_first_cropcal value
 </entry>
 
-<entry id="stream_fldfilename_sdate" type="char*256(30)" category="datasets"
+<entry id="allow_invalid_swindow_inputs" type="logical" category="datasets"
+       group="cropcal_streams" valid_values="" >
+By default, a value in stream_fldFileName_swindow_start or _end outside the range [1, 365] (or 366 in leap years) will cause the run to fail. Set this to .true. to instead fall back on the paramfile sowing windows.
+</entry>
+
+<entry id="stream_fldFileName_swindow_start" type="char*256(30)" category="datasets"
        input_pathname="abs" group="cropcal_streams" valid_values="" >
-Filename of input stream data for sowing dates
+Filename of input stream data for date (day of year) of start of sowing window. Cells with the same sowing window start and end date are always planted on that date, regardless of climatic conditions/history.
+</entry>
+
+<entry id="stream_fldFileName_swindow_end" type="char*256(30)" category="datasets"
+       input_pathname="abs" group="cropcal_streams" valid_values="" >
+Filename of input stream data for date (day of year) of end of sowing window. Cells with the same sowing window start and end date are always planted on that date, regardless of climatic conditions/history.
 </entry>
 
 <entry id="stream_fldfilename_cultivar_gdds" type="char*256(30)" category="datasets"
@@ -2135,7 +2270,7 @@ Land mask description
 
 <entry id="lnd_tuning_mode" type="char*20" category="default_settings"
        group="default_settings"
-       valid_values="clm4_5_CRUv7,clm4_5_GSWP3v1,clm4_5_cam6.0,clm5_0_cam6.0,clm5_0_CRUv7,clm5_0_GSWP3v1,clm5_1_GSWP3v1">
+       valid_values="clm4_5_CRUv7,clm4_5_GSWP3v1,clm4_5_cam6.0,clm4_5_cam5.0,clm4_5_cam4.0,clm5_0_cam6.0,clm5_0_cam5.0,clm5_0_cam4.0,clm5_0_CRUv7,clm5_0_GSWP3v1,clm5_1_GSWP3v1,clm5_1_CRUv7,clm5_1_cam6.0,clm5_1_cam5.0,clm5_1_cam4.0">
 General configuration of model version and atmospheric forcing to tune the model to run under.
 This sets the model to run with constants and initial conditions that were set to run well under 
 the configuration of model version and atmospheric forcing. To run well constants would need to be changed
@@ -2455,12 +2590,6 @@ If surface water is active or not
 (deprecated -- will be removed)
 </entry>
 
-<entry id="origflag" type="integer" category="clm_physics"
-       group="clm_soilhydrology_inparm" valid_values="0,1" >
-Use original CLM4 soil hydraulic properties
-(deprecated -- will be removed)
-</entry>
-
 <!-- ========================================================================================  -->
 <!-- namelist elements associated with the CH4 Model                                           -->
 <!-- ========================================================================================  -->
@@ -2762,11 +2891,6 @@ Snow compaction overburden exponential factor (1/K)
 Not used for snow_overburden_compaction_method=Vionnet2012
 </entry>
 
-<entry id="fresh_snw_rds_max" type="real" category="clm_physics"
-       group="aerosol"   >
-maximum warm (at freezing) fresh snow effective radius [microns]
-</entry>
-
 <entry id="reset_snow" type="logical" category="clm_physics"
        group="clm_snowhydrology_inparm"   >
 If set to .true., then reset the snow pack over non-glacier columns to a small value.
@@ -2822,6 +2946,11 @@ differently in areas below and above reset_snow_glc_ela.
 Parameterization to use for snow cover fraction
 NiuYang2007: Niu and Yang 2007
 SwensonLawrence2012: Swenson and Lawrence 2012
+</entry>
+
+<entry id="snow_thermal_cond_method" type="char*25" category="clm_physics"
+       group="clm_inparm" valid_values="Jordan1991,Sturm1997" >
+Parameterization to use for snow thermal conductivity
 </entry>
 
 <!-- ========================================================================================  -->
@@ -2946,5 +3075,23 @@ Mapping method from excess ice input stream data to the model resolution
     none     = no interpolation
 </entry>
 
+<!-- ========================================================================================  -->
+<!-- Namelist items controlling tillage                                                        -->
+<!-- ========================================================================================  -->
+
+<entry id="tillage_mode" type="char*8" category="physics"
+       group="tillage_inparm" valid_values="off,low,high">
+Whether to till crop soil, and if so, with what intensity.
+</entry>
+
+<entry id="use_original_tillage_phases" type="logical" category="physics"
+       group="tillage_inparm" valid_values="" value=".false.">
+Toggle to use original (Graham et al. 2021) tillage logic, with bug for seasons crossing into a new calendar year
+</entry>
+
+<entry id="max_tillage_depth" type="real" category="physics"
+       group="tillage_inparm" valid_values="" value="0.26d00">
+Maximum depth to till soil (m). Default 0.26; original (Graham et al., 2021) value was unintentionally 0.32.
+</entry>
 
 </namelist_definition>
