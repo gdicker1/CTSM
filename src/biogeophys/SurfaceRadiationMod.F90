@@ -477,8 +477,9 @@ contains
      use clm_varpar       , only : numrad, nlevsno
      use clm_varcon       , only : spval
      use landunit_varcon  , only : istsoil, istcrop 
-     use clm_varctl       , only : use_subgrid_fluxes, use_snicar_frc, iulog, use_SSRE, do_sno_oc
+     use clm_varctl       , only : use_subgrid_fluxes, use_snicar_frc, iulog, use_SSRE
      use clm_time_manager , only : get_step_size_real, is_near_local_noon
+     use SnowSnicarMod    , only : DO_SNO_OC
      use abortutils       , only : endrun
      !
      ! !ARGUMENTS:
@@ -855,7 +856,7 @@ contains
              sfc_frc_bc(p) = sabg(p) - sabg_bc(p)
 
              ! OC aerosol forcing (patch-level):
-             if (do_sno_oc) then
+             if (DO_SNO_OC) then
                 sfc_frc_oc(p) = sabg(p) - sabg_oc(p)
              else
                 sfc_frc_oc(p) = 0._r8

@@ -13,7 +13,6 @@ module CNProductsMod
   use clm_time_manager        , only : get_step_size_real
   use SpeciesBaseType         , only : species_base_type
   use PatchType               , only : patch
-  use clm_varctl              , only : use_fates_bgc
   !
   implicit none
   private
@@ -347,17 +346,6 @@ contains
        this%tot_woodprod_grc(g) = 0._r8
     end do
 
-    ! We don't call the woodproduct fluxes routine if
-    ! no veg patches are active. This is what happens
-    ! when fates is on. Woodproduct fluxes use a p2g
-    ! upscaling for the gru_ pools. Must zero it here then.
-    if(use_fates_bgc)then
-       do g = bounds%begg, bounds%endg
-          this%gru_prod10_gain_grc(g) = 0._r8
-          this%gru_prod100_gain_grc(g) = 0._r8
-       end do
-    end if
-    
     ! Need to set these patch-level fluxes to 0 everywhere for the sake of special
     ! landunits (because they don't get set over special landunits in the run loop)
     do p = bounds%begp, bounds%endp
@@ -399,7 +387,6 @@ contains
     ! !LOCAL VARIABLES:
     logical :: template_provided
     logical :: readvar
-    integer :: g
 
     character(len=*), parameter :: subname = 'Restart'
     !-----------------------------------------------------------------------
@@ -498,20 +485,7 @@ contains
     end if
 
     if (flag == 'read') then
-
-       ! We don't call the woodproduct fluxes routine if
-       ! no veg patches are active. This is what happens
-       ! when fates is on. Woodproduct fluxes use a p2g
-       ! upscaling for the gru_ pools. Must zero it here then.
-       if(use_fates_bgc)then
-          do g = bounds%begg, bounds%endg
-             this%gru_prod10_gain_grc(g) = 0._r8
-             this%gru_prod100_gain_grc(g) = 0._r8
-          end do
-        end if
-       
        call this%ComputeSummaryVars(bounds)
-
     end if
 
   end subroutine Restart
@@ -815,7 +789,6 @@ contains
 
        ! fluxes into wood & crop product pools, from landcover change
        this%cropprod1_grc(g) = this%cropprod1_grc(g) + this%dwt_cropprod1_gain_grc(g)*dt
-       
        this%prod10_grc(g)    = this%prod10_grc(g)    + this%dwt_prod10_gain_grc(g)*dt
        this%prod100_grc(g)   = this%prod100_grc(g)   + this%dwt_prod100_gain_grc(g)*dt
 
@@ -861,7 +834,7 @@ contains
        this%tot_woodprod_grc(g) = &
             this%prod10_grc(g) + &
             this%prod100_grc(g)
-       
+
        ! total loss from wood products
        this%tot_woodprod_loss_grc(g) = &
             this%prod10_loss_grc(g) + &

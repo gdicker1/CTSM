@@ -168,11 +168,6 @@ module clm_varctl
   ! true => make ALL patches, cols & landunits active (even if weight is 0)
   logical, public :: all_active = .false.          
 
-  ! true => any ocean (i.e., "wetland") points on the surface dataset are converted to
-  ! bare ground (or whatever vegetation is given in that grid cell... but typically this
-  ! will be bare ground)
-  logical, public :: convert_ocean_to_land = .false.
-
   logical, public :: collapse_urban = .false.  ! true => collapse urban landunits to the dominant urban landunit; default = .false. means "do nothing" i.e. keep all urban landunits as found in the input data
   integer, public :: n_dom_landunits = -1  ! # of dominant landunits; determines the number of active landunits; default = 0 (set in namelist_defaults_ctsm.xml) means "do nothing"
   integer, public :: n_dom_pfts = -1  ! # of dominant pfts; determines the number of active pfts; default = 0 (set in namelist_defaults_ctsm.xml) means "do nothing"
@@ -234,36 +229,6 @@ module clm_varctl
   character(len=64), public    :: o3_veg_stress_method = 'unset'
 
   real(r8), public  :: o3_ppbv = 100._r8
-
-  ! number of wavelength bands used in SNICAR snow albedo calculation
-  integer, public :: snicar_numrad_snw = 5 
-
-  ! type of downward solar radiation spectrum for SNICAR snow albedo calculation
-  ! options:
-  ! mid_latitude_winter, mid_latitude_summer, sub_arctic_winter,
-  ! sub_arctic_summer, summit_greenland_summer, high_mountain_summer;
-  character(len=25), public :: snicar_solarspec = 'mid_latitude_winter'
-
-  ! dust optics type for SNICAR snow albedo calculation
-  ! options:
-  ! sahara: Saharan dust (Balkanski et al., 2007, central hematite)
-  ! san_juan_mtns_colorado: San Juan Mountains dust, CO (Skiles et al, 2017)
-  ! greenland: Greenland dust (Polashenski et al., 2015, central absorptivity)
-  character(len=25), public :: snicar_dust_optics = 'sahara'
-  ! option to turn off aerosol effect in snow in SNICAR
-  logical, public :: snicar_use_aerosol = .true. ! if .false., turn off aerosol deposition flux
-
-  ! option for snow grain shape in SNICAR (He et al. 2017 JC)
-  character(len=25), public :: snicar_snw_shape = 'hexagonal_plate'  ! sphere, spheroid, hexagonal_plate, koch_snowflake
-
-  ! option to activate BC-snow internal mixing in SNICAR (He et al. 2017 JC), ceniln
-  logical, public :: snicar_snobc_intmix = .false.   ! false->external mixing for all BC; true->internal mixing for hydrophilic BC
-
-  ! option to activate dust-snow internal mixing in SNICAR (He et al. 2017 JC), ceniln
-  logical, public :: snicar_snodst_intmix = .false.   ! false->external mixing for all dust; true->internal mixing for all dust
-
-  ! option to activate OC in snow in SNICAR
-  logical, public :: do_sno_oc = .false.  ! control to include organic carbon (OC) in snow
 
   !----------------------------------------------------------
   ! C isotopes
@@ -438,8 +403,8 @@ module clm_varctl
   ! namelist: write CH4 extra diagnostic output
   logical, public :: hist_wrtch4diag = .false.         
 
-  ! namelist: write list of all history fields to a file for use in documentation
-  logical, public :: hist_fields_list_file = .false.
+  ! namelist: write history master list to a file for use in documentation
+  logical, public :: hist_master_list_file = .false.
 
   !----------------------------------------------------------
   ! FATES

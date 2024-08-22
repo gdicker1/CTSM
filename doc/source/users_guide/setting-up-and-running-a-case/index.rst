@@ -18,6 +18,6 @@ Setting Up and Running a Case
    customizing-the-clm-configuration.rst
    customizing-the-clm-namelist.rst
    customizing-the-datm-namelist.rst
-   history_fields_nofates
-   history_fields_fates
+   master_list_nofates
+   master_list_fates
 

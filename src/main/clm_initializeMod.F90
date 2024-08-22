@@ -17,7 +17,7 @@ module clm_initializeMod
   use clm_varctl            , only : use_lch4, use_cn, use_cndv, use_c13, use_c14
   use clm_varctl            , only : use_soil_moisture_streams
   use clm_instur            , only : wt_lunit, urban_valid, wt_nat_patch, wt_cft, fert_cft
-  use clm_instur            , only : irrig_method, wt_glc_mec, topo_glc_mec, pct_lake_max, pct_urban_max
+  use clm_instur            , only : irrig_method, wt_glc_mec, topo_glc_mec, haslake, pct_urban_max
   use perf_mod              , only : t_startf, t_stopf
   use readParamsMod         , only : readParameters
   use ncdio_pio             , only : file_desc_t
@@ -41,7 +41,6 @@ module clm_initializeMod
   public :: initialize2  ! Phase two initialization
 
   integer :: actual_numcft  ! numcft from sfc dataset
-  integer :: actual_nlevurb ! nlevurb from sfc dataset
   integer :: actual_numpft  ! numpft from sfc dataset
 
 !-----------------------------------------------------------------------
@@ -58,7 +57,7 @@ contains
     use clm_varcon           , only: clm_varcon_init
     use landunit_varcon      , only: landunit_varcon_init
     use clm_varctl           , only: fsurdat, version
-    use surfrdMod            , only: surfrd_get_num_patches, surfrd_get_nlevurb
+    use surfrdMod            , only: surfrd_get_num_patches
     use controlMod           , only: control_init, control_print, NLFilename
     use ncdio_pio            , only: ncd_pio_init
     use initGridCellsMod     , only: initGridCells
@@ -100,7 +99,6 @@ contains
     call control_init(dtime)
     call ncd_pio_init()
     call surfrd_get_num_patches(fsurdat, actual_maxsoil_patches, actual_numpft, actual_numcft)
-    call surfrd_get_nlevurb(fsurdat, actual_nlevurb)
 
     ! If fates is on, we override actual_maxsoil_patches. FATES dictates the
     ! number of patches per column.  We still use numcft from the surface
@@ -109,7 +107,7 @@ contains
        call CLMFatesGlobals1(actual_numpft, actual_numcft, actual_maxsoil_patches)
     end if
 
-    call clm_varpar_init(actual_maxsoil_patches, actual_numpft, actual_numcft, actual_nlevurb)
+    call clm_varpar_init(actual_maxsoil_patches, actual_numpft, actual_numcft)
     call decomp_cascade_par_init( NLFilename )
     call clm_varcon_init( IsSimpleBuildTemp() )
     call landunit_varcon_init()
@@ -236,7 +234,7 @@ contains
     allocate (irrig_method (begg:endg, cft_lb:cft_ub       ))
     allocate (wt_glc_mec   (begg:endg, maxpatch_glc     ))
     allocate (topo_glc_mec (begg:endg, maxpatch_glc     ))
-    allocate (pct_lake_max (begg:endg                      ))
+    allocate (haslake      (begg:endg                      ))
     allocate (pct_urban_max(begg:endg, numurbl             ))
     allocate (wt_nat_patch (begg:endg, surfpft_lb:surfpft_ub ))
 
@@ -318,7 +316,7 @@ contains
     ! Some things are kept until the end of initialize2; urban_valid is kept through the
     ! end of the run for error checking, pct_urban_max is kept through the end of the run
     ! for reweighting in subgridWeights.
-    deallocate (wt_lunit, wt_cft, wt_glc_mec, pct_lake_max)
+    deallocate (wt_lunit, wt_cft, wt_glc_mec, haslake)
 
     ! Determine processor bounds and clumps for this processor
     call get_proc_bounds(bounds_proc)
@@ -693,7 +691,7 @@ contains
     elseif ( use_fates_sp ) then
        call interpMonthlyVeg(bounds_proc, canopystate_inst)
     end if
-    
+
     ! Determine gridcell averaged properties to send to atm
     if (nsrest == nsrStartup) then
        call t_startf('init_map2gc')
@@ -729,6 +727,7 @@ contains
           !$OMP PARALLEL DO PRIVATE (nc, bounds_clump)
           do nc = 1,nclumps
              call get_clump_bounds(nc, bounds_clump)
+
              ! FATES satellite phenology mode needs to include all active and inactive patch-level soil
              ! filters due to the translation between the hlm pfts and the fates pfts.
              ! E.g. in FATES, an active PFT vector of 1, 0, 0, 0, 1, 0, 1, 0 would be mapped into
@@ -741,12 +740,11 @@ contains
           end do
           !$OMP END PARALLEL DO
        end if
-       
        call clm_fates%init_coldstart(water_inst%waterstatebulk_inst, &
             water_inst%waterdiagnosticbulk_inst, canopystate_inst, &
             soilstate_inst, soilbiogeochem_carbonflux_inst)
     end if
-    
+
     ! topo_glc_mec was allocated in initialize1, but needed to be kept around through
     ! initialize2 because it is used to initialize other variables; now it can be deallocated
     deallocate(topo_glc_mec, fert_cft, irrig_method)
