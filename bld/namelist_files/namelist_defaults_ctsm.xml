@@ -1757,8 +1757,12 @@ lnd/clm2/surfdata_esmf/ctsm5.2.0/surfdata_10x15_hist_2000_16pfts_c240216.nc</fsu
 lnd/clm2/surfdata_esmf/ctsm5.2.0/surfdata_4x5_hist_2000_16pfts_c240216.nc</fsurdat>
 <fsurdat hgrid="mpasa60"   sim_year="2000" use_crop=".false.">
 lnd/clm2/surfdata_esmf/ctsm5.2.0/surfdata_mpasa60_hist_2000_16pfts_c240216.nc</fsurdat>
+<fsurdat hgrid="mpasa30"   sim_year="2000" use_crop=".false.">
+lnd/clm2/surfdata_esmf/ctsm5.3.0/surfdata_mpasa30_hist_2000_16pfts_c240913.nc</fsurdat>
 <fsurdat hgrid="mpasa15"   sim_year="2000" use_crop=".false.">
 lnd/clm2/surfdata_esmf/ctsm5.2.0/surfdata_mpasa15_hist_2000_16pfts_c240216.nc</fsurdat>
+<fsurdat hgrid="mpasa7p5"   sim_year="2000" use_crop=".false.">
+lnd/clm2/surfdata_esmf/ctsm5.3.0/surfdata_mpasa7p5_hist_2000_16pfts_c240913.nc</fsurdat>
 <!--
 <fsurdat hgrid="mpasa15-3" sim_year="2000" use_crop=".false.">
 lnd/clm2/surfdata_esmf/ctsm5.2.0/surfdata_mpasa15-3_hist_2000_16pfts_c240216.nc</fsurdat>
