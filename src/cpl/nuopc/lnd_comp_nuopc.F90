@@ -711,6 +711,7 @@ contains
     use clm_instMod , only : water_inst, atm2lnd_inst, glc2lnd_inst, lnd2atm_inst, lnd2glc_inst
     use decompMod   , only : bounds_type, get_proc_bounds
     use clm_driver  , only : clm_drv
+    use shr_mem_mod , only : shr_mem_prtusage
 
     ! input/output variables
     type(ESMF_GridComp)  :: gcomp
@@ -756,6 +757,7 @@ contains
     integer                :: shrlogunit ! original log unit
     character(len=*),parameter  :: subname=trim(modName)//':(ModelAdvance) '
     !-------------------------------------------------------------------------------
+    call shr_mem_prtusage('GDD lnd 00 enter')
 
     rc = ESMF_SUCCESS
     call ESMF_LogWrite(subname//' called', ESMF_LOGMSG_INFO)
@@ -976,6 +978,7 @@ contains
     endif
 #endif
 
+    call shr_mem_prtusage('GDD lnd -1 exit')
   end subroutine ModelAdvance
 
   !===============================================================================
